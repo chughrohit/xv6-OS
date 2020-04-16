@@ -120,6 +120,8 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+void		print_hello(void); //hello
+int 		info(int); //lab1
 
 // swtch.S
 void            swtch(struct context**, struct context*);

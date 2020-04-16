@@ -112,6 +112,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  p->num_sys_calls = 0;
   return p;
 }
 
@@ -207,6 +208,8 @@ fork(void)
     if(curproc->ofile[i])
       np->ofile[i] = filedup(curproc->ofile[i]);
   np->cwd = idup(curproc->cwd);
+
+  np->num_sys_calls = 0; // set sys call counter to t0
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
 
@@ -530,5 +533,41 @@ procdump(void)
         cprintf(" %p", pc[i]);
     }
     cprintf("\n");
+  }
+}
+
+
+// hello
+void
+print_hello(void)
+{
+  cprintf("hello from the kernel space\n");
+}
+
+//lab1
+int
+info (int val)
+{
+  argint(0, &val);
+
+  if(val == 1)
+  {
+    struct proc *p;
+    int counter = 0;
+    
+    acquire(&ptable.lock);
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    {
+      if(p->state != UNUSED)
+        counter++;
+    }
+
+    release(&ptable.lock);
+    return counter;
+  }
+  else
+  {
+    return -1;
   }
 }

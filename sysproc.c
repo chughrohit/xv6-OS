@@ -89,3 +89,44 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+//hello
+int
+sys_hello(void)
+{
+  print_hello();
+  return 0;
+}
+
+//lab1-info
+int
+sys_info(void)
+{
+  int val;
+  argint(0, &val);
+  
+  struct proc *curr_proc;
+  curr_proc = myproc();
+
+  if(val == 1)
+  {
+    cprintf("Number of Processes: %d\n", info(val));
+  }
+
+  else if(val == 2)
+  {
+    cprintf("Number of System Calls: %d\n", curr_proc->num_sys_calls);
+  }
+
+  else if(val == 3)
+  {
+    cprintf("Number of Memory Page: %d\n", (int)(curr_proc->sz)/PGSIZE);
+  }
+
+  else
+  {
+    cprintf("Invalid Parameter Value.\n");
+  }
+
+  return 0;
+}
