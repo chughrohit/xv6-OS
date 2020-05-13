@@ -96,7 +96,7 @@ sys_assignTicket(void)
   int val;
   struct proc* p = myproc();
   argint(0, &val);
-  if(val)
+  if(val == 1)
   {
     int tickets;
     argint(1, &tickets);

@@ -38,6 +38,6 @@ unsigned lcg_parkmiller(unsigned *state)
     return *state = (a > b) ? (a - b) : (a + (N - b));
 }
 
-unsigned next_random() {
+unsigned next_random(void) {
     return lcg_parkmiller(&random_seed);
 }

@@ -1,2 +1,2 @@
 unsigned lcg_parkmiller(unsigned *state);
-unsigned next_random(); 
+unsigned next_random(void); 

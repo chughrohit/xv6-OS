@@ -6,7 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-#include "rng.h"
+#include "rand.h"
 
 struct {
   struct spinlock lock;
@@ -87,7 +87,7 @@ allocproc(void)
   return 0;
 
 found:
-  p->tickets = 10;
+  p->tickets = 10; // Default Priority
   p->tick_counter = 0;
   p->state = EMBRYO;
   p->pid = nextpid++;
@@ -234,24 +234,28 @@ exit(void)
   struct proc *p;
   int fd;
 
-static char *states[] = {
-  [UNUSED]    "unused",
-  [EMBRYO]    "embryo",
-  [SLEEPING]  "sleep ",
-  [RUNNABLE]  "runble",
-  [RUNNING]   "run   ",
-  [ZOMBIE]    "zombie"
+  static char *states[] = {
+	  [UNUSED]    "unused",
+	  [EMBRYO]    "embryo",
+	  [SLEEPING]  "sleep ",
+	  [RUNNABLE]  "runble",
+	  [RUNNING]   "run   ",
+	  [ZOMBIE]    "zombie"
   };
+
   char *state;
+
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED)
       continue;
-    if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
+  
+  	if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
       state = states[p->state];
-    else
+  
+  	else
       state = "???";
 
-    cprintf("From  %s-%d: %d %s %s ticket=%d \n", myproc()->name, myproc()->pid, p->pid, state, p->name, p->tick_counter);
+    cprintf("From  %s-%d: %d %s %s ticks=%d \n", myproc()->name, myproc()->pid, p->pid, state, p->name, p->tick_counter);
   }
 
   if(curproc == initproc)
@@ -353,7 +357,7 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    unsigned counter = 0;
+    int counter = 0;
     int totalTickets = 0;
 
     for(p=ptable.proc; p<&ptable.proc[NPROC];p++)
@@ -363,7 +367,8 @@ scheduler(void)
       totalTickets += p->tickets;
     }
 
-    unsigned selectedTicket = next_random(totalTickets);
+    //long selectedTicket = (next_random()%totalTickets)+1;
+	long selectedTicket = random_at_most(totalTickets);
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
