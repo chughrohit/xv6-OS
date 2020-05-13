@@ -52,7 +52,7 @@ struct proc {
   int tickets;                 // Ticket Count
   int stride;                  // Stride
   int pass;                    // Pass
-  int tick_counter;    
+  int tick_counter;            // Tick Counter
 };
 
 // Process memory is laid out contiguously, low addresses first:
