@@ -253,7 +253,7 @@ static char *states[] = {
     else
       state = "???";
 
-    cprintf("From  %s-%d: %d %s %s ticket=%d \n", myproc()->name, myproc()->pid, p->pid, state, p->name, p->tick_counter);
+    cprintf("From  %s-%d: %d %s %s ticks=%d \n", myproc()->name, myproc()->pid, p->pid, state, p->name, p->tick_counter);
   }
 
 if(curproc == initproc)

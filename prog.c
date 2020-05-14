@@ -3,43 +3,49 @@
 #include "stat.h"
 #include "user.h"
 
-int main(int argc, char * argv[]) {
-
-  int Scheduler(void);
-
-  Scheduler();
-  return 0;
-}
-
-int Scheduler(void) {
+int StrideScheduler(void) {
 
   int pid;
-  int i, j, k;
 
-  ticket_assign(1, 60);
-  for (i = 0; i < 3; i++) {
+  assignTicket(1, 60);
+  for (int i = 0; i < 3; i++) {
     pid = fork();
-    if (pid > 0) {
+
+    if (pid) {
       continue;
-    } else if (pid == 0) {
-      ticket_assign(1, 30 - 10 * i);
-      for (j = 0; j < 30000; j++) {
-        for (k = 0; k < 30000; k++) {
-          asm("nop");
+    } 
+	else if (!pid) {
+
+      assignTicket(1, 30 - 10 * i);
+
+      for (int j = 0; j < 20000; j++) {
+		  asm("nop");
+        for (int k = 0; k < 20000; k++) {
+        	asm("nop");
         }
       }
-      printf(1, "\n  child# %d with %d tickets has finished!  \n", getpid(), 30 - 10 * i, ticket_assign(0, 10));
+
+      printf(1, "\n  child# %d with %d tickets has finished!  \n", getpid(), 30 - 10 * i, assignTicket(0, 10));
       exit();
+
     } else {
       printf(2, "  \n  Error  \n ");
     }
   }
 
-  if (pid > 0) {
-    for (i = 0; i < 3; i++) {
+  if (pid) {
+    for (int i = 0; i < 3; i++) {
       wait();
     }
   }
+
   exit();
   return 0;
 }
+
+int main(int argc, char * argv[]) {
+  StrideScheduler();
+  return 0;
+}
+
+

@@ -91,7 +91,7 @@ sys_uptime(void)
 }
 
 int
-sys_ticket_assign(void)
+sys_assignTicket(void)
 {
   int x;
   struct proc *p = myproc();
