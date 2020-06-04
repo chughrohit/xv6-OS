@@ -532,3 +532,64 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int clone(void*(func)(void*), void *stack, int size, void *arg) 
+{
+  int i, pid;
+  struct proc *currproc = myproc(), *np;
+
+  if(!(np = allocproc()))
+  {
+    return -1;
+  }
+
+  if ( ((uint)stack % PGSIZE) || (!stack) )
+  {
+    return -1;
+  }
+
+  
+  np->parent = currproc;
+  np->state = UNUSED;
+  np->sz = currproc->sz;
+  np->pgdir = currproc->pgdir;
+  *np->tf = *currproc->tf;
+  np->tf->eax = 0;          
+  np->tf->eip = (uint)func; 
+
+  for (i = 0; i < NOFILE; i++)
+  {
+    if (currproc->ofile[i])
+	{
+      np->ofile[i] = filedup(currproc->ofile[i]);
+	}
+  }
+  np->cwd = idup(currproc->cwd);
+
+  safestrcpy(np->name, currproc->name, sizeof(currproc->name));
+
+  acquire(&ptable.lock);
+  
+  uint ustack[2];
+  ustack[0] = 0xffffffff;  
+  ustack[1] = (uint)arg;
+
+  np->tf->esp = (uint)(stack+PGSIZE - 4); 
+  *((uint*)(np->tf->esp)) = (uint)arg; 
+  *((uint*)(np->tf->esp) - 4) = 0xFFFFFFFF; 
+  np->tf->esp =(np->tf->esp) - 4;
+
+  if (copyout(np->pgdir, np->tf->esp, ustack, size) < 0) 
+  {
+    cprintf("\n> Stack copy failed\n");
+    return -1;
+  }
+
+  pid = np->pid;
+  np->state = RUNNABLE;
+  np->tf->ebp = currproc->tf->esp;
+
+  release(&ptable.lock);
+
+  return pid;
+}

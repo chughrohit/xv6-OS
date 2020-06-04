@@ -77,8 +77,6 @@ sys_sleep(void)
   return 0;
 }
 
-// return how many clock tick interrupts have occurred
-// since start.
 int
 sys_uptime(void)
 {
@@ -88,4 +86,18 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int 
+sys_clone(void) 
+{
+  void *func, *stackptr, *arg;
+  int size;
+
+  if (argptr(0, (char**)(&func), sizeof(void*)) < 0) return -1;
+  if (argptr(1, (char**)(&stackptr), sizeof(void*)) < 0) return -1;
+  if (argint(2, &size) < 0) return -1;
+  if (argptr(3, (char**)(&arg), sizeof(void*)) < 0) return -1;
+
+  return clone((void*)(func), (void*)stackptr, size, (void*)arg);
 }
