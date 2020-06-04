@@ -8,18 +8,20 @@ lock_t lock;
 void 
 player(void* arg) 
 {
-    int tid = *(int*)arg;
+    int catcher = *(int*)arg;
 
-    int pass_num = (tid <= round % thread_num) ? (round / thread_num + 1) : (round / thread_num);
+    int pass_num = (catcher <= round % thread_num) ? (round / thread_num + 1) : (round / thread_num);
 
     int i;
-    for (i = 0; i < pass_num; i++) {
-        if (thrower != tid) {
+    for (i = 0; i < pass_num; i++) 
+	{
+        if (thrower != catcher) 
+		{
             lock_acquire(&lock);
             pass_number++;
             printf(1, "# Pass number no: %d | ", pass_number);
-            printf(1, "Thread %d is passing the token to thread %d\n", thrower, tid);
-            thrower = tid;
+            printf(1, "Thread %d is passing the token to thread %d\n", thrower, catcher);
+            thrower = catcher;
             lock_release(&lock);
             sleep(20);
         }
