@@ -41,6 +41,8 @@ void* malloc(uint);
 void free(void*);
 int atoi(const char*);
 
+
+// Lab 3
 void *thread_create(void*(start_routine)(void*), void*);
 void lock_init(lock_t*);
 void lock_acquire(lock_t*);

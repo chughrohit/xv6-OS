@@ -3,9 +3,9 @@
 #include "fcntl.h"
 #include "user.h"
 #include "x86.h"
+#include "traps.h"
 #include "param.h"
 #include "syscall.h"
-#include "traps.h"
 #include "fs.h"
 #define PGSIZE 4096
 
